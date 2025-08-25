@@ -1,0 +1,104 @@
+@model IEnumerable<retailCLDVportal.Models.ProductEntity>
+@{
+    ViewData["Title"] = "Products";
+
+    string PriceFmt(long? cents, string? cur) {
+        if (!cents.HasValue) return "";
+        var val = cents.Value / 100m;
+        var prefix = (cur ?? "ZAR") == "ZAR" ? "R " : "";
+        return prefix + val.ToString("0.00");
+    }
+}
+<div class="page-head d-flex justify-content-between align-items-start">
+    <div>
+        <h1>Products</h1>
+        <p class="page-sub">Manage product catalog and inventory</p>
+    </div>
+    <a class="btn btn-primary" asp-controller="Products" asp-action="Create">
+        <i class="bi bi-plus-lg me-1"></i> New Product
+    </a>
+</div>
+
+@if (TempData["Message"] is string ok) {
+    <div class="alert alert-success mt-3">@ok</div>
+}
+@if (TempData["Error"] is string err) {
+    <div class="alert alert-danger mt-3">@err</div>
+}
+
+<div class="glass-card p-3">
+    <div class="table-responsive">
+        <table class="table table-neon table-compact align-middle">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Available</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var p in Model)
+            {
+                var available = p.IsAvailable ?? ((p.StockQuantity ?? 0) > 0);
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <div style="width:56px;height:56px;overflow:hidden;border-radius:8px;background:#222;">
+                                @if (!string.IsNullOrWhiteSpace(p.MediaUrl) && (p.MediaContentType?.StartsWith("image/") ?? false))
+                                {
+                                    <img src="@p.MediaUrl" alt="thumb" class="img-fluid" />
+                                }
+                            </div>
+                            <div>
+                                <div class="fw-semibold">@p.Name</div>
+                                @if (!string.IsNullOrWhiteSpace(p.Description))
+                                {
+                                    <div class="text-muted small truncate-24">@p.Description</div>
+                                }
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(p.Category))
+                        {
+                            <span class="badge bg-secondary">@p.Category</span>
+                        }
+                    </td>
+                    <td>@PriceFmt(p.PriceCents, p.Currency)</td>
+                    <td>@p.StockQuantity</td>
+                    <td>
+                        @if (available)
+                        { <span class="badge bg-success">In stock</span> }
+                        else
+                        { <span class="badge bg-secondary">Out</span> }
+                    </td>
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                            <a class="btn btn-outline-light" asp-action="Details" asp-route-pk="@p.PartitionKey" asp-route-rk="@p.RowKey" title="Details">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a class="btn btn-outline-light" asp-action="Edit" asp-route-pk="@p.PartitionKey" asp-route-rk="@p.RowKey" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <form asp-action="Delete" method="post" class="d-inline"
+                                  asp-route-pk="@p.PartitionKey" asp-route-rk="@p.RowKey"
+                                  onsubmit="return confirm('Delete @p.Name?');">
+                                <button type="submit" class="btn btn-outline-light" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-2 text-muted small">
+        <i class="bi bi-info-circle me-1"></i>
+        Long names/descriptions are truncated here. Open <strong>Details</strong> to see full content.
+    </div>
+</div>

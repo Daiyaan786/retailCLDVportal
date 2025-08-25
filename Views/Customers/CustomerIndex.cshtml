@@ -1,0 +1,122 @@
+@model IEnumerable<retailCLDVportal.Models.CustomerEntity>
+@{
+    ViewData["Title"] = "Customers";
+    int? Age(DateTime? dob)
+    {
+        if (dob is null) return null;
+        var d = dob.Value.Date;
+        var today = DateTime.UtcNow.Date;
+        var age = today.Year - d.Year;
+        if (d > today.AddYears(age * -1)) age--;
+        return age;
+    }
+}
+
+<div class="page-head d-flex justify-content-between align-items-start">
+    <div>
+        <h1>Customers</h1>
+        <p class="page-sub">Manage customer profiles in Azure Table Storage</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-primary" asp-controller="Customers" asp-action="Create">
+            <i class="bi bi-plus-lg me-1"></i> New Customer
+        </a>
+    </div>
+</div>
+
+@if (TempData["Message"] is string okMsg)
+{
+    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        @okMsg
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["Error"] is string errMsg)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+        @errMsg
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="glass-card p-3">
+    <div class="table-responsive">
+        <table class="table table-neon table-compact align-middle">
+            <thead class="table-head-sticky">
+            <tr>
+                <th>Name</th>
+                <th class="d-none d-md-table-cell">Date of Birth</th>
+                <th class="text-center">Age</th>
+                <th>Email</th>
+                <th class="d-none d-lg-table-cell">Phone</th>
+                <th class="d-none d-xl-table-cell">City</th>
+                <th class="d-none d-xl-table-cell">Country</th>
+                <th class="text-end">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var c in Model)
+            {
+                <tr>
+                    <td>
+                        <div class="fw-semibold">@($"{c.FirstName} {c.Surname}")</div>
+                        @if (!string.IsNullOrWhiteSpace(c.CompanyName))
+                        {
+                            <div class="text-muted small truncate-24">@c.CompanyName</div>
+                        }
+                    </td>
+
+                    <td class="d-none d-md-table-cell text-nowrap">@c.DateOfBirth?.ToString("dd-MM-yyyy")</td>
+                    <td class="text-center">@Age(c.DateOfBirth)</td>
+
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(c.Email))
+                        {
+                            <a class="link-truncate" href="mailto:@c.Email" title="@c.Email">
+                                <i class="bi bi-envelope me-1"></i><span class="truncate-28">@c.Email</span>
+                            </a>
+                        }
+                    </td>
+
+                    <td class="d-none d-lg-table-cell text-nowrap">@c.PhoneNumber</td>
+                    <td class="d-none d-xl-table-cell">@c.City</td>
+                    <td class="d-none d-xl-table-cell">@c.Country</td>
+
+                    <td class="actions text-end">
+                        <div class="btn-group btn-group-sm" role="group">
+                            <a class="btn btn-outline-light" title="Details"
+                               asp-controller="Customers" asp-action="Details"
+                               asp-route-pk="@c.PartitionKey" asp-route-rk="@c.RowKey">
+                                <i class="bi bi-eye"></i>
+                            </a>
+
+                            <a class="btn btn-outline-light" title="Edit"
+                                asp-controller="Customers" asp-action="Edit"
+                                asp-route-pk="@c.PartitionKey" asp-route-rk="@c.RowKey">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+
+                            <!-- Delete: POST with anti-forgery, inline confirm -->
+                            <form asp-controller="Customers"
+                                  asp-action="Delete"
+                                  asp-route-pk="@c.PartitionKey"
+                                  asp-route-rk="@c.RowKey"
+                                  method="post"
+                                  class="d-inline"
+                                  onsubmit="return confirm('Delete @($"{c.FirstName} {c.Surname}")?');">
+                                <button type="submit" class="btn btn-outline-light" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <div class="mt-2 text-muted small">
+        <i class="bi bi-sliders me-1"></i>
+        Long columns are truncated. Open <strong>Details</strong> to see full info (Address, State/Province, Zip).
+    </div>
+</div>

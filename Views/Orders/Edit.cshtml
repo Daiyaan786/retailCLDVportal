@@ -1,0 +1,131 @@
+@model retailCLDVportal.Models.OrderEntity
+@{
+    ViewData["Title"] = "Edit Order";
+    var customers = (IEnumerable<dynamic>)ViewBag.Customers ?? Array.Empty<dynamic>();
+    var products  = (IEnumerable<dynamic>)ViewBag.Products  ?? Array.Empty<dynamic>();
+
+    var selCustPk = (string?)ViewBag.SelectedCustomerPk ?? Model.CustomerPk;
+    var selCustRk = (string?)ViewBag.SelectedCustomerRk ?? Model.CustomerRk;
+    var selProdPk = (string?)ViewBag.SelectedProductPk  ?? Model.ProductPk;
+    var selProdRk = (string?)ViewBag.SelectedProductRk  ?? Model.ProductRk;
+
+    string Money(long cents, string? cur) {
+        var v = cents / 100m; var prefix = (cur ?? "ZAR") == "ZAR" ? "R " : "";
+        return prefix + v.ToString("0.00");
+    }
+}
+<div class="page-head">
+  <div>
+    <h1>Edit Order @Model.OrderNo</h1>
+    <p class="page-sub">Adjust customer, product, or quantity</p>
+  </div>
+</div>
+
+<form asp-action="Edit"
+      asp-route-pk="@Model.PartitionKey"
+      asp-route-rk="@Model.RowKey"
+      method="post" class="glass-card p-4">
+  <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+  <div class="row g-4">
+    <div class="col-lg-6">
+      <label class="form-label">Customer</label>
+      <select class="form-select" name="CustomerPk" id="CustomerPk" required
+              onchange="document.getElementById('CustomerRk').value=this.selectedOptions[0]?.dataset.rk || '';">
+        <option value="">-- choose --</option>
+        @foreach (var c in customers)
+        {
+            var selected = (string)c.pk == selCustPk && (string)c.rk == selCustRk ? "selected" : null;
+            <option value="@c.pk" data-rk="@c.rk" selected="@selected">@c.name</option>
+        }
+      </select>
+      <input type="hidden" name="CustomerRk" id="CustomerRk" value="@selCustRk" />
+    </div>
+
+    <div class="col-lg-6">
+      <label class="form-label">Product</label>
+      <select class="form-select" name="ProductPk" id="ProductPk" required onchange="onProductChanged(this)">
+        <option value="">-- choose --</option>
+        @foreach (var p in products)
+        {
+            var selected = (string)p.pk == selProdPk && (string)p.rk == selProdRk ? "selected" : null;
+            <option value="@p.pk" data-rk="@p.rk" selected="@selected">@p.name</option>
+        }
+      </select>
+      <input type="hidden" name="ProductRk" id="ProductRk" value="@selProdRk" />
+    </div>
+
+    <div class="col-lg-6">
+      <label class="form-label">Quantity</label>
+      <input class="form-control" type="number" min="1" step="1" name="Quantity" id="Quantity"
+             value="@Model.Quantity" oninput="recalc()" required />
+    </div>
+
+    <div class="col-lg-6">
+      <label class="form-label">Summary</label>
+      <div class="form-control bg-dark-subtle">
+        <div>Unit: <span id="UnitPrice">@Money(Model.UnitPriceCents, Model.Currency)</span></div>
+        <div>Available: <span id="Stock">-</span></div>
+        <div class="fw-bold mt-1">Total: <span id="Total">@Money(Model.TotalCents, Model.Currency)</span></div>
+        <input type="hidden" name="UnitPriceCents" id="UnitPriceCents" value="@Model.UnitPriceCents" />
+        <input type="hidden" name="Currency" id="Currency" value="@Model.Currency" />
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 d-flex gap-2">
+    <button class="btn btn-primary" type="submit" id="SubmitBtn">Save</button>
+    <a class="btn btn-outline-secondary"
+       asp-action="Details"
+       asp-route-pk="@Model.PartitionKey"
+       asp-route-rk="@Model.RowKey">Cancel</a>
+  </div>
+</form>
+
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+<script>
+  let priceCents = parseInt(document.getElementById('UnitPriceCents').value || "0", 10) || 0;
+  let stock = 0, currency = document.getElementById('Currency').value || "ZAR";
+
+  function onProductChanged(sel) {
+    const pk = sel.value;
+    const rk = sel.selectedOptions[0]?.dataset.rk || "";
+    document.getElementById('ProductRk').value = rk;
+    if (!pk || !rk) return;
+
+    fetch(`@Url.Action("ProductInfo","Orders")?pk=${encodeURIComponent(pk)}&rk=${encodeURIComponent(rk)}`)
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(j => {
+        priceCents = j.priceCents || 0;
+        stock = j.stock || 0;
+        currency = j.currency || "ZAR";
+        document.getElementById('Currency').value = currency;
+        document.getElementById('UnitPriceCents').value = priceCents;
+        document.getElementById('UnitPrice').innerText = money(priceCents, currency);
+        document.getElementById('Stock').innerText = stock;
+        recalc();
+      })
+      .catch(_ => {});
+  }
+
+  function money(cents, cur) {
+    const val = (cents || 0) / 100;
+    const prefix = (cur || "ZAR") === "ZAR" ? "R " : "";
+    return prefix + val.toFixed(2);
+  }
+
+  function recalc() {
+    const qty = parseInt(document.getElementById('Quantity').value || "0", 10);
+    const total = (priceCents || 0) * (qty > 0 ? qty : 0);
+    document.getElementById('Total').innerText = money(total, currency);
+    document.getElementById('SubmitBtn').disabled = !(qty >= 1 && (!stock || qty <= stock));
+  }
+
+  // preload stock for current product on load
+  window.addEventListener('DOMContentLoaded', () => {
+    const sel = document.getElementById('ProductPk');
+    if (sel.value && document.getElementById('ProductRk').value) onProductChanged(sel);
+  });
+</script>
+}

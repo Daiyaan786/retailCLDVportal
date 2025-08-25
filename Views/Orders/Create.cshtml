@@ -1,0 +1,117 @@
+@model retailCLDVportal.Models.OrderInput
+@{
+    ViewData["Title"] = "New Order";
+    var customers = (IEnumerable<dynamic>)ViewBag.Customers ?? Array.Empty<dynamic>();
+    var products  = (IEnumerable<dynamic>)ViewBag.Products  ?? Array.Empty<dynamic>();
+}
+<div class="page-head">
+    <div>
+        <h1>New Order</h1>
+        <p class="page-sub">Create and place a new order</p>
+    </div>
+</div>
+
+<form asp-action="Create" method="post" class="glass-card p-4">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <label class="form-label">Customer</label>
+            <select class="form-select" name="CustomerPk" id="CustomerPk" required
+                    onchange="document.getElementById('CustomerRk').value=this.selectedOptions[0]?.dataset.rk || '';">
+                <option value="">-- choose --</option>
+                @foreach (var c in customers)
+                {
+                    <option value="@c.pk" data-rk="@c.rk">@c.name</option>
+                }
+            </select>
+            <input type="hidden" name="CustomerRk" id="CustomerRk" value="@Model.CustomerRk" />
+        </div>
+
+        <div class="col-lg-6">
+            <label class="form-label">Product</label>
+            <select class="form-select" name="ProductPk" id="ProductPk" required onchange="onProductChanged(this)">
+                <option value="">-- choose --</option>
+                @foreach (var p in products)
+                {
+                    <option value="@p.pk" data-rk="@p.rk">@p.name</option>
+                }
+            </select>
+            <input type="hidden" name="ProductRk" id="ProductRk" value="@Model.ProductRk" />
+        </div>
+
+        <div class="col-lg-6">
+            <label class="form-label">Quantity</label>
+            <input class="form-control" type="number" min="1" step="1" name="Quantity" id="Quantity"
+                   value="@(Model.Quantity == 0 ? 1 : Model.Quantity)" oninput="recalc()" required />
+        </div>
+
+        <div class="col-lg-6">
+            <label class="form-label">Summary</label>
+            <div class="form-control bg-dark-subtle">
+                <div>Unit: <span id="UnitPrice">-</span></div>
+                <div>Available: <span id="Stock">-</span></div>
+                <div class="fw-bold mt-1">Total: <span id="Total">-</span></div>
+                <input type="hidden" name="UnitPriceCents" id="UnitPriceCents" />
+                <input type="hidden" name="Currency" id="Currency" />
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+        <button class="btn btn-primary" type="submit" id="SubmitBtn" disabled>Place Order</button>
+        <a class="btn btn-outline-secondary" asp-action="Index">Cancel</a>
+    </div>
+</form>
+
+@section Scripts {
+<partial name="_ValidationScriptsPartial" />
+<script>
+    let priceCents = 0, stock = 0, currency = "ZAR";
+
+    function onProductChanged(sel) {
+        const pk = sel.value;
+        const rk = sel.selectedOptions[0]?.dataset.rk || "";
+        document.getElementById('ProductRk').value = rk;
+
+        if (!pk || !rk) { resetSummary(); return; }
+
+        fetch(`@Url.Action("ProductInfo","Orders")?pk=${encodeURIComponent(pk)}&rk=${encodeURIComponent(rk)}`)
+            .then(r => r.ok ? r.json() : Promise.reject())
+            .then(j => {
+                priceCents = j.priceCents || 0;
+                stock = j.stock || 0;
+                currency = j.currency || "ZAR";
+                document.getElementById('Currency').value = currency;
+                document.getElementById('UnitPriceCents').value = priceCents;
+                document.getElementById('UnitPrice').innerText = money(priceCents, currency);
+                document.getElementById('Stock').innerText = stock;
+                recalc();
+            })
+            .catch(_ => resetSummary());
+    }
+
+    function money(cents, cur) {
+        const val = (cents || 0) / 100;
+        const prefix = (cur || "ZAR") === "ZAR" ? "R " : "";
+        return prefix + val.toFixed(2);
+    }
+
+    function recalc() {
+        const qty = parseInt(document.getElementById('Quantity').value || "0", 10);
+        const total = (priceCents || 0) * (qty > 0 ? qty : 0);
+        document.getElementById('Total').innerText = money(total, currency);
+
+        const ok = document.getElementById('ProductPk').value && (qty >= 1) && (qty <= stock);
+        document.getElementById('SubmitBtn').disabled = !ok;
+    }
+
+    function resetSummary() {
+        priceCents = 0; stock = 0; currency = "ZAR";
+        document.getElementById('UnitPrice').innerText = "-";
+        document.getElementById('Stock').innerText = "-";
+        document.getElementById('Total').innerText = "-";
+        document.getElementById('SubmitBtn').disabled = true;
+    }
+</script>
+}
