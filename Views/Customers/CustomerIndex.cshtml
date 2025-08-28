@@ -7,18 +7,104 @@
         var d = dob.Value.Date;
         var today = DateTime.UtcNow.Date;
         var age = today.Year - d.Year;
-        if (d > today.AddYears(age * -1)) age--;
+        if (d > today.AddYears(-age)) age--;
         return age;
     }
 }
 
-<div class="page-head d-flex justify-content-between align-items-start">
+<!-- Page Background -->
+<style>
+    body {
+        background: linear-gradient(135deg, #1a4dbf, #4e73df);
+        color: #e0e6ed;
+        font-family: "Segoe UI", sans-serif;
+    }
+
+    .page-head h1 {
+        font-weight: 700;
+        color: #f1f5f9;
+    }
+
+    .page-sub {
+        color: #9ca3af;
+    }
+
+    /* Glassmorphism card */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(12px);
+    }
+
+    /* Neon table */
+    .table-neon {
+        color: #e5e7eb;
+    }
+
+        .table-neon thead {
+            background: rgba(59, 130, 246, 0.15);
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .table-neon th {
+            font-weight: 600;
+            color: #93c5fd;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .table-neon tbody tr:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transition: 0.3s ease;
+        }
+
+    /* Action buttons */
+    .btn-outline-light {
+        border-color: #60a5fa;
+        color: #93c5fd;
+    }
+
+        .btn-outline-light:hover {
+            background: #3b82f6;
+            color: #fff;
+            border-color: #3b82f6;
+        }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #2563eb, #3b82f6);
+        border: none;
+        font-weight: 600;
+    }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8, #2563eb);
+        }
+
+    /* Subtle truncation effect */
+    .truncate-24, .truncate-28 {
+        display: inline-block;
+        max-width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Footer note */
+    .table-note {
+        color: #9ca3af;
+        font-size: 0.85rem;
+    }
+</style>
+
+<div class="page-head d-flex justify-content-between align-items-start mb-4">
     <div>
         <h1>Customers</h1>
-        <p class="page-sub">Manage customer profiles in Azure Table Storage</p>
+        <p class="page-sub">Manage customer profiles with ease</p>
     </div>
     <div class="d-flex gap-2">
-        <a class="btn btn-primary" asp-controller="Customers" asp-action="Create">
+        <a class="btn btn-primary shadow-lg" asp-controller="Customers" asp-action="Create">
             <i class="bi bi-plus-lg me-1"></i> New Customer
         </a>
     </div>
@@ -27,96 +113,93 @@
 @if (TempData["Message"] is string okMsg)
 {
     <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
-        @okMsg
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <i class="bi bi-check-circle me-2"></i> @okMsg
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 @if (TempData["Error"] is string errMsg)
 {
     <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-        @errMsg
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <i class="bi bi-exclamation-triangle me-2"></i> @errMsg
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
-<div class="glass-card p-3">
+<div class="glass-card p-4 mt-3">
     <div class="table-responsive">
-        <table class="table table-neon table-compact align-middle">
+        <table class="table table-neon table-hover align-middle">
             <thead class="table-head-sticky">
-            <tr>
-                <th>Name</th>
-                <th class="d-none d-md-table-cell">Date of Birth</th>
-                <th class="text-center">Age</th>
-                <th>Email</th>
-                <th class="d-none d-lg-table-cell">Phone</th>
-                <th class="d-none d-xl-table-cell">City</th>
-                <th class="d-none d-xl-table-cell">Country</th>
-                <th class="text-end">Actions</th>
-            </tr>
+                <tr>
+                    <th>Name</th>
+                    <th class="d-none d-md-table-cell">Date of Birth</th>
+                    <th class="text-center">Age</th>
+                    <th>Email</th>
+                    <th class="d-none d-lg-table-cell">Phone</th>
+                    <th class="d-none d-xl-table-cell">City</th>
+                    <th class="d-none d-xl-table-cell">Country</th>
+                    <th class="text-end">Actions</th>
+                </tr>
             </thead>
             <tbody>
-            @foreach (var c in Model)
-            {
-                <tr>
-                    <td>
-                        <div class="fw-semibold">@($"{c.FirstName} {c.Surname}")</div>
-                        @if (!string.IsNullOrWhiteSpace(c.CompanyName))
-                        {
-                            <div class="text-muted small truncate-24">@c.CompanyName</div>
-                        }
-                    </td>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">@($"{c.FirstName} {c.Surname}")</div>
+                            @if (!string.IsNullOrWhiteSpace(c.CompanyName))
+                            {
+                                <div class="text-muted small truncate-24">@c.CompanyName</div>
+                            }
+                        </td>
 
-                    <td class="d-none d-md-table-cell text-nowrap">@c.DateOfBirth?.ToString("dd-MM-yyyy")</td>
-                    <td class="text-center">@Age(c.DateOfBirth)</td>
+                        <td class="d-none d-md-table-cell text-nowrap">@c.DateOfBirth?.ToString("dd-MM-yyyy")</td>
+                        <td class="text-center">@Age(c.DateOfBirth)</td>
 
-                    <td>
-                        @if (!string.IsNullOrWhiteSpace(c.Email))
-                        {
-                            <a class="link-truncate" href="mailto:@c.Email" title="@c.Email">
-                                <i class="bi bi-envelope me-1"></i><span class="truncate-28">@c.Email</span>
-                            </a>
-                        }
-                    </td>
+                        <td>
+                            @if (!string.IsNullOrWhiteSpace(c.Email))
+                            {
+                                <a class="link-truncate text-decoration-none" href="mailto:@c.Email" title="@c.Email">
+                                    <i class="bi bi-envelope me-1"></i><span class="truncate-28">@c.Email</span>
+                                </a>
+                            }
+                        </td>
 
-                    <td class="d-none d-lg-table-cell text-nowrap">@c.PhoneNumber</td>
-                    <td class="d-none d-xl-table-cell">@c.City</td>
-                    <td class="d-none d-xl-table-cell">@c.Country</td>
+                        <td class="d-none d-lg-table-cell text-nowrap">@c.PhoneNumber</td>
+                        <td class="d-none d-xl-table-cell">@c.City</td>
+                        <td class="d-none d-xl-table-cell">@c.Country</td>
 
-                    <td class="actions text-end">
-                        <div class="btn-group btn-group-sm" role="group">
-                            <a class="btn btn-outline-light" title="Details"
-                               asp-controller="Customers" asp-action="Details"
-                               asp-route-pk="@c.PartitionKey" asp-route-rk="@c.RowKey">
-                                <i class="bi bi-eye"></i>
-                            </a>
-
-                            <a class="btn btn-outline-light" title="Edit"
-                                asp-controller="Customers" asp-action="Edit"
-                                asp-route-pk="@c.PartitionKey" asp-route-rk="@c.RowKey">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-
-                            <!-- Delete: POST with anti-forgery, inline confirm -->
-                            <form asp-controller="Customers"
-                                  asp-action="Delete"
-                                  asp-route-pk="@c.PartitionKey"
-                                  asp-route-rk="@c.RowKey"
-                                  method="post"
-                                  class="d-inline"
-                                  onsubmit="return confirm('Delete @($"{c.FirstName} {c.Surname}")?');">
-                                <button type="submit" class="btn btn-outline-light" title="Delete">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-            }
+                        <td class="actions text-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <a class="btn btn-outline-light" title="Details"
+                                   asp-controller="Customers" asp-action="Details"
+                                   asp-route-pk="@c.PartitionKey" asp-route-rk="@c.RowKey">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a class="btn btn-outline-light" title="Edit"
+                                   asp-controller="Customers" asp-action="Edit"
+                                   asp-route-pk="@c.PartitionKey" asp-route-rk="@c.RowKey">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form asp-controller="Customers"
+                                      asp-action="Delete"
+                                      asp-route-pk="@c.PartitionKey"
+                                      asp-route-rk="@c.RowKey"
+                                      method="post"
+                                      class="d-inline"
+                                      onsubmit="return confirm('Delete @($"{c.FirstName} {c.Surname}")?');">
+                                    <button type="submit" class="btn btn-outline-light" title="Delete">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
-    <div class="mt-2 text-muted small">
+    <div class="mt-3 table-note">
         <i class="bi bi-sliders me-1"></i>
-        Long columns are truncated. Open <strong>Details</strong> to see full info (Address, State/Province, Zip).
+        Some columns are truncated — open <strong>Details</strong> to view full info.
     </div>
 </div>

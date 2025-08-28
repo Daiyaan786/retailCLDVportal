@@ -1,4 +1,5 @@
 using retailCLDVportal.Services;
+using Microsoft.Extensions.Azure;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,12 @@ builder.Services.AddSingleton<IProductTableService, ProductTableService>();
 builder.Services.AddSingleton<IOrderQueueService, OrderQueueService>();
 
 builder.Services.AddSingleton<IOrderTableService, OrderTableService>();
+builder.Services.AddAzureClients(clientBuilder =>
+{
+    clientBuilder.AddBlobServiceClient(builder.Configuration["StorageConnection:blobServiceUri"]!).WithName("StorageConnection");
+    clientBuilder.AddQueueServiceClient(builder.Configuration["StorageConnection:queueServiceUri"]!).WithName("StorageConnection");
+    clientBuilder.AddTableServiceClient(builder.Configuration["StorageConnection:tableServiceUri"]!).WithName("StorageConnection");
+});
 
 
 var app = builder.Build();

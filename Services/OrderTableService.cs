@@ -2,7 +2,7 @@
 using Azure;
 using Azure.Data.Tables;
 using retailCLDVportal.Models;
-
+//ordertable
 namespace retailCLDVportal.Services
 {
     public interface IOrderTableService

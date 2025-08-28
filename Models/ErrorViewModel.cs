@@ -1,5 +1,5 @@
 namespace retailCLDVportal.Models;
-
+//error
 public class ErrorViewModel
 {
     public string? RequestId { get; set; }

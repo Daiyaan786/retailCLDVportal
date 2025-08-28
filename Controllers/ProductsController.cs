@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using retailCLDVportal.Models;
 using retailCLDVportal.Services;
-
+//product
 namespace retailCLDVportal.Controllers
 {
     [Route("Products")]

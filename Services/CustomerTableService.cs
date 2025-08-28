@@ -37,7 +37,7 @@ namespace retailCLDVportal.Services
         {
             try
             {
-                var entity = CustomerEntity.NewFrom(input);     // ensures UTC for DateOfBirth, keys, etc.
+                var entity = CustomerEntity.NewFrom(input);     
                 await _table.AddEntityAsync(entity, ct);
                 return (true, null, entity);
             }

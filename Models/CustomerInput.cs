@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace retailCLDVportal.Models
 {
-    /// <summary>
+ 
     /// MVC input/view model for Create/Edit forms.
     /// Keeps UI validation concerns out of the storage entity.
-    /// </summary>
+   
     public class CustomerInput
     {
         [Required, StringLength(50)]

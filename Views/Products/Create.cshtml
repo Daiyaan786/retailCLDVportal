@@ -2,69 +2,76 @@
 @{
     ViewData["Title"] = "New Product";
 }
-<h2>New Product</h2>
 
-<form asp-action="Create" asp-controller="Products" method="post" enctype="multipart/form-data">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-    <div class="row g-4">
-        <div class="col-lg-8">
-            <div class="mb-3">
-                <label asp-for="Name" class="form-label">Product Name</label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Category" class="form-label">Category</label>
-                <input asp-for="Category" class="form-control" />
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Description" class="form-label">Description</label>
-                <textarea asp-for="Description" class="form-control" rows="5"></textarea>
-            </div>
-
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label asp-for="Price" class="form-label">Price</label>
-                    <div class="input-group">
-                        <span class="input-group-text">R</span>
-                        <input asp-for="Price" class="form-control" />
-                    </div>
-                    <span asp-validation-for="Price" class="text-danger"></span>
-                </div>
-                <div class="col-md-6">
-                    <label asp-for="StockQuantity" class="form-label">Stock Quantity</label>
-                    <input asp-for="StockQuantity" class="form-control" />
-                    <span asp-validation-for="StockQuantity" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="mb-3 mt-3">
-                <label asp-for="MediaFile" class="form-label">Upload Image/Video</label>
-                <input asp-for="MediaFile" type="file" class="form-control"
-                       accept=".jpg,.jpeg,.png,.webp,.mp4,.webm,.mov,.avi,.mkv" />
-                <div class="form-text">
-                    Supported: jpg, jpeg, png, webp, mp4, webm, mov, avi, mkv.
-                </div>
-            </div>
-
-            <div class="d-flex gap-2 mt-3">
-                <button class="btn btn-primary" type="submit">Create</button>
-                <a class="btn btn-outline-secondary" asp-controller="Products" asp-action="Index">Cancel</a>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="border rounded p-3" style="min-height: 320px;">
-                <div class="text-muted">Media preview</div>
-                <!-- Optional: simple preview via JS (image-only) -->
-                <img id="previewImg" class="img-fluid mt-2 d-none" alt="preview"/>
-            </div>
-        </div>
+<div class="page-head d-flex justify-content-between align-items-start">
+    <div>
+        <h1 class="text-white">New Product</h1>
+        <p class="page-sub text-light">Create a new product entry</p>
     </div>
-</form>
+</div>
+
+<div class="glass-card bg-gradient p-4 mt-3">
+    <form asp-action="Create" asp-controller="Products" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label fw-bold text-light">Product Name</label>
+                    <input asp-for="Name" class="form-control shadow-sm" />
+                    <span asp-validation-for="Name" class="text-warning"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Category" class="form-label fw-bold text-light">Category</label>
+                    <input asp-for="Category" class="form-control shadow-sm" />
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-bold text-light">Description</label>
+                    <textarea asp-for="Description" class="form-control shadow-sm" rows="5"></textarea>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Price" class="form-label fw-bold text-light">Price</label>
+                        <div class="input-group shadow-sm">
+                            <span class="input-group-text bg-primary text-white">R</span>
+                            <input asp-for="Price" class="form-control" />
+                        </div>
+                        <span asp-validation-for="Price" class="text-warning"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="StockQuantity" class="form-label fw-bold text-light">Stock Quantity</label>
+                        <input asp-for="StockQuantity" class="form-control shadow-sm" />
+                        <span asp-validation-for="StockQuantity" class="text-warning"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3 mt-3">
+                    <label asp-for="MediaFile" class="form-label fw-bold text-light">Upload Image/Video</label>
+                    <input asp-for="MediaFile" type="file" class="form-control shadow-sm"
+                           accept=".jpg,.jpeg,.png,.webp,.mp4,.webm,.mov,.avi,.mkv" />
+                    <div class="form-text text-light">
+                        Supported: jpg, jpeg, png, webp, mp4, webm, mov, avi, mkv.
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-3">
+                    <button class="btn btn-light fw-bold" type="submit">Create</button>
+                    <a class="btn btn-outline-light" asp-controller="Products" asp-action="Index">Cancel</a>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="border rounded p-3 bg-dark text-light" style="min-height: 320px;">
+                    <div class="fw-bold">Media Preview</div>
+                    <img id="previewImg" class="img-fluid mt-2 d-none rounded shadow" alt="preview" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -86,3 +93,25 @@
         }
     </script>
 }
+
+<style>
+    body {
+        background: linear-gradient(135deg, #0d6efd, #1a1a40);
+        color: #fff;
+    }
+
+    .glass-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+    }
+
+    .form-control, .input-group-text {
+        border-radius: 8px;
+    }
+
+    .btn {
+        border-radius: 8px;
+    }
+</style>

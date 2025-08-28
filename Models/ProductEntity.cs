@@ -5,16 +5,16 @@ using Azure.Data.Tables;
 
 namespace retailCLDVportal.Models
 {
-    /// <summary>
+   
     /// Product entity stored in Azure Table Storage.
     /// Price is stored in minor units (cents) to avoid floating-point issues.
     /// Media fields point to a blob you will upload to Azure Blob Storage.
-    /// </summary>
+  
     public sealed class ProductEntity : ITableEntity
     {
         // ---- Table Storage keys/metadata ----
-        public string PartitionKey { get; set; } = default!;      // e.g. UPPER(category) or "_"
-        public string RowKey { get; set; } = default!;            // GUID string
+        public string PartitionKey { get; set; } = default!;     
+        public string RowKey { get; set; } = default!;            
         public ETag ETag { get; set; } = ETag.All;
         public DateTimeOffset? Timestamp { get; set; }
 

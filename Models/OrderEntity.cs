@@ -7,8 +7,8 @@ namespace retailCLDVportal.Models
     public sealed class OrderEntity : ITableEntity
     {
         // Keys/ETag/Timestamp
-        public string PartitionKey { get; set; } = default!;   // e.g., "ORD-2025-08"
-        public string RowKey { get; set; } = default!;         // GUID
+        public string PartitionKey { get; set; } = default!;  
+        public string RowKey { get; set; } = default!;         
         public ETag ETag { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
 

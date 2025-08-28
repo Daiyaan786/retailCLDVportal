@@ -3,50 +3,120 @@
 }
 @section Styles {
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        /* Page background */
+        body {
+            background-color: #e6f0ff; /* Light blue page background */
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            background: linear-gradient(135deg, #1a4dbf, #4e73df); /* Blue gradient */
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+            .dashboard-header h1 {
+                font-size: 3rem;
+                font-weight: 700;
+            }
+
+            .dashboard-header p {
+                font-size: 1.2rem;
+                opacity: 0.85;
+            }
+
+        /* Cards */
+        .dashboard-cards .card {
+            border: none;
+            border-radius: 12px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            color: inherit;
+            text-decoration: none;
+            background-color: white; /* Keep cards white for contrast */
+        }
+
+            .dashboard-cards .card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+                background-color: #f0f4ff; /* Slight blue tint on hover */
+                text-decoration: none;
+            }
+
+        .dashboard-cards i {
+            font-size: 3rem;
+            color: #1a4dbf; /* Blue icon */
+            margin-bottom: 15px;
+        }
+
+        .dashboard-cards h5 {
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .dashboard-cards p {
+            font-size: 0.95rem;
+            color: #6c757d;
+        }
+
+       
+    </style>
 }
 
-    <div class="container py-5">
-        <div class="text-center mb-5">
-            <h1 class="display-5 fw-bold">ABC Retail CLoud Management Portal</h1>
-            <p class="text-muted mb-0">Choose a section to get started</p>
+<div class="container py-5">
+    <div class="dashboard-header mb-5">
+        <h1>ABC Retail Cloud Management Portal</h1>
+        <p>Manage your customers, products, inventory, orders, and contracts from a single dashboard</p>
+    </div>
+
+    <div class="row g-4 dashboard-cards justify-content-center">
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card" onclick='location.href="@Url.Action("Index", "Customers")"'>
+                <i class="bi bi-people-fill"></i>
+                <h5>Customers</h5>
+                <p>View and manage all your customers efficiently with detailed insights.</p>
+            </div>
         </div>
 
-        <div class="row g-4 justify-content-center home-grid">
-    <div class="col-12 col-sm-6 col-lg-3">
-        <a class="btn btn-home w-100" asp-controller="Customers" asp-action="Index">
-        <i class="bi bi-people-fill me-2" aria-hidden="true"></i>
-        <span>Customers</span>
-        </a>
-    </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card" onclick='location.href="@Url.Action("Index", "Products")"'>
+                <i class="bi bi-box-seam-fill"></i>
+                <h5>Products</h5>
+                <p>Track your product catalog, pricing, and availability in real-time.</p>
+            </div>
+        </div>
 
-    <div class="col-12 col-sm-6 col-lg-3">
-        <a class="btn btn-home w-100" asp-controller="Products" asp-action="Index">
-        <i class="bi bi-box-seam-fill me-2" aria-hidden="true"></i>
-        <span>Products</span>
-        </a>
-    </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card" onclick='location.href="/Inventory/Peek"'>
+                <i class="bi bi-boxes"></i>
+                <h5>Inventory</h5>
+                <p>Monitor inventory levels and manage stock across multiple locations.</p>
+            </div>
+        </div>
 
-    <div class="col-12 col-sm-6 col-lg-3">
-        <a class="btn btn-home w-100" href="/Inventory/Peek">
-        <i class="bi bi-boxes me-2" aria-hidden="true"></i>
-        <span>Inventory</span>
-        </a>
-    </div>
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card" onclick='location.href="@Url.Action("Index", "Orders")"'>
+                <i class="bi bi-cart-check-fill"></i>
+                <h5>Orders</h5>
+                <p>Review, process, and track all orders quickly from a single interface.</p>
+            </div>
+        </div>
 
-    <div class="col-12 col-sm-6 col-lg-3">
-        <a class="btn btn-home w-100" asp-controller="Orders" asp-action="Index">
-        <i class="bi bi-cart-check-fill me-2"></i>
-        <span>Order</span>
-        </a>
-    </div>
-
-    <div class="col-12 col-sm-6 col-lg-3">
-        <a class="btn btn-home w-100" asp-controller="Contract" asp-action="Index">
-        <i class="bi bi-cloud-arrow-up-fill me-2" aria-hidden="true"></i>
-        <span>Contracts</span>
-        </a>
-    </div>
-    </div>
-
+        <div class="col-12 col-sm-6 col-lg-3">
+            <div class="card" onclick='location.href="@Url.Action("Index", "Contract")"'>
+                <i class="bi bi-cloud-arrow-up-fill"></i>
+                <h5>Contracts</h5>
+                <p>Manage contracts and agreements seamlessly with cloud storage integration.</p>
+            </div>
+        </div>
     </div>
 </div>
+

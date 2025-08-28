@@ -4,7 +4,7 @@ using Azure.Data.Tables;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using retailCLDVportal.Models;
-
+//producttableservice
 namespace retailCLDVportal.Services
 {
     public interface IProductTableService

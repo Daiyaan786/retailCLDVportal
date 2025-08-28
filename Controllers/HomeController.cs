@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using retailCLDVportal.Models;
 
 namespace retailCLDVportal.Controllers;
-
+//homepage
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;

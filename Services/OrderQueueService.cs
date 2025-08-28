@@ -1,7 +1,7 @@
 #nullable enable
 using System.Text.Json;
 using Azure.Storage.Queues;
-
+//orderqueueservice
 namespace retailCLDVportal.Services
 {
     public interface IOrderQueueService

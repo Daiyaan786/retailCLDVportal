@@ -14,7 +14,7 @@ namespace retailCLDVportal.Models
         public ETag ETag { get; set; } = ETag.All;
         public DateTimeOffset? Timestamp { get; set; }
 
-        // Domain fields
+        // Domain
         [Required, StringLength(50)]
         public string FirstName { get; set; } = string.Empty;
 

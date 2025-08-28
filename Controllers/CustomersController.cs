@@ -23,7 +23,7 @@ namespace retailCLDVportal.Controllers
             return View("CustomerIndex", items); // => Views/Customers/CustomerIndex.cshtml
         }
 
-        // GET /Customers/Create
+        
         [HttpGet("Create")]
         public IActionResult Create() => View(new CustomerInput());
 
